@@ -1,0 +1,28 @@
+.emotion-tree {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.emotion-tree h2 {
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.emotion-tree-content {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+@media (max-width: 600px) {
+  .emotion-tree {
+    padding: 10px;
+  }
+  
+  .emotion-tree-content {
+    padding: 10px;
+  }
+} 
