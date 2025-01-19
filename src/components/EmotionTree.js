@@ -1,15 +1,11 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import EmotionNode from './EmotionNode';
 import emotions from '../data/emotions';
 import '../styles/components/EmotionTree.css';
 
 const EmotionTree = ({ onEmotionSelect, selectedEmotion }) => {
-  const navigate = useNavigate();
-
-  const handleSelect = (name, data) => {
-    onEmotionSelect(name, data);
-    navigate('/details');
+  const handleSelect = (name, parentHierarchy) => {
+    onEmotionSelect(name, parentHierarchy);
   };
 
   return (
@@ -22,7 +18,7 @@ const EmotionTree = ({ onEmotionSelect, selectedEmotion }) => {
             name={name}
             data={data}
             onSelect={handleSelect}
-            isSelected={selectedEmotion?.name === name}
+            isSelected={selectedEmotion === name}
             parentHierarchy={[]}
           />
         ))}

@@ -8,14 +8,10 @@ const EmotionNode = ({ name, data, onSelect, isSelected, parentHierarchy = [] })
 
   const handleClick = (e) => {
     e.stopPropagation();
-    if (hasSubEmotions) {
-      setIsExpanded(!isExpanded);
-    } else {
-      onSelect(name, {
-        ...data,
-        hierarchy: currentHierarchy
-      });
+    if (!hasSubEmotions) {
+      onSelect(name, currentHierarchy);
     }
+    setIsExpanded(!isExpanded);
   };
 
   return (
@@ -39,7 +35,7 @@ const EmotionNode = ({ name, data, onSelect, isSelected, parentHierarchy = [] })
               name={subName}
               data={subData}
               onSelect={onSelect}
-              isSelected={isSelected}
+              isSelected={isSelected === subName}
               parentHierarchy={currentHierarchy}
             />
           ))}

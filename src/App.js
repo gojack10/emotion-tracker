@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useState } from 'react';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { Tabs, Tab, Box, AppBar } from '@mui/material';
 import EmotionTree from './components/EmotionTree';
-import EmotionDetails from './components/EmotionDetails';
-import EmotionHistory from './components/EmotionHistory';
-import { ThemeProvider, createTheme } from '@mui/material';
+import EmotionRecorder from './components/tabs/EmotionRecorder';
+import EmotionHistory from './components/tabs/EmotionHistory';
 import './App.css';
 
 const theme = createTheme({
@@ -14,64 +14,65 @@ const theme = createTheme({
   },
 });
 
+function TabPanel({ children, value, index }) {
+  return (
+    <div hidden={value !== index} style={{ height: 'calc(100vh - 112px)', overflow: 'auto' }}>
+      {value === index && children}
+    </div>
+  );
+}
+
 function App() {
+  const [selectedTab, setSelectedTab] = useState(0);
   const [selectedEmotion, setSelectedEmotion] = useState(null);
-  const [emotionHistory, setEmotionHistory] = useState(() => {
-    const saved = localStorage.getItem('emotionHistory');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [parentEmotions, setParentEmotions] = useState([]);
 
-  useEffect(() => {
-    localStorage.setItem('emotionHistory', JSON.stringify(emotionHistory));
-  }, [emotionHistory]);
-
-  const handleEmotionSelect = (name, data) => {
-    setSelectedEmotion({ name, ...data });
+  const handleEmotionSelect = (emotion, parents = []) => {
+    setSelectedEmotion(emotion);
+    setParentEmotions(parents);
   };
 
-  const handleEmotionSave = (entry) => {
-    setEmotionHistory(prev => [entry, ...prev]);
+  const handleTabChange = (event, newValue) => {
+    setSelectedTab(newValue);
   };
 
   return (
     <ThemeProvider theme={theme}>
-      <Router>
-        <div className="App">
-          <header className="App-header">
-            <h1>Emotion Tracker</h1>
-          </header>
-          <main>
-            <Routes>
-              <Route 
-                path="/" 
-                element={
-                  <EmotionTree 
-                    onEmotionSelect={handleEmotionSelect} 
-                    selectedEmotion={selectedEmotion}
-                  />
-                } 
+      <div className="App">
+        <AppBar position="static" color="default">
+          <Tabs
+            value={selectedTab}
+            onChange={handleTabChange}
+            indicatorColor="primary"
+            textColor="primary"
+            variant="fullWidth"
+          >
+            <Tab label="Record Emotion" />
+            <Tab label="History" />
+          </Tabs>
+        </AppBar>
+
+        <Box sx={{ display: 'flex', height: 'calc(100vh - 64px)' }}>
+          <Box sx={{ width: '50%', borderRight: 1, borderColor: 'divider' }}>
+            <EmotionTree
+              onEmotionSelect={handleEmotionSelect}
+              selectedEmotion={selectedEmotion}
+            />
+          </Box>
+          
+          <Box sx={{ width: '50%', overflow: 'auto' }}>
+            <TabPanel value={selectedTab} index={0}>
+              <EmotionRecorder
+                selectedEmotion={selectedEmotion}
+                parentEmotions={parentEmotions}
               />
-              <Route 
-                path="/details" 
-                element={
-                  <EmotionDetails 
-                    selectedEmotion={selectedEmotion}
-                    onSave={handleEmotionSave}
-                  />
-                } 
-              />
-              <Route 
-                path="/history" 
-                element={
-                  <EmotionHistory 
-                    entries={emotionHistory}
-                  />
-                } 
-              />
-            </Routes>
-          </main>
-        </div>
-      </Router>
+            </TabPanel>
+            <TabPanel value={selectedTab} index={1}>
+              <EmotionHistory />
+            </TabPanel>
+          </Box>
+        </Box>
+      </div>
     </ThemeProvider>
   );
 }
