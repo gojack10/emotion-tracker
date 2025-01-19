@@ -9,7 +9,8 @@
   margin: 4px 0;
   cursor: pointer;
   border-radius: 4px;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
 }
 
 .emotion-item:hover {
@@ -18,6 +19,11 @@
 
 .emotion-item.leaf:hover {
   background-color: #e3f2fd;
+}
+
+.emotion-item.selected {
+  background-color: #bbdefb;
+  border-color: #1976d2;
 }
 
 .expand-icon {
