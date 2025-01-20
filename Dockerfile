@@ -2,11 +2,15 @@ FROM node:18-alpine as builder
 
 WORKDIR /app
 
+# Add python and build dependencies
+RUN apk add --no-cache python3 make g++ git
+
 # Copy package files
 COPY package.json yarn.lock ./
 
-# Install dependencies
-RUN yarn install --frozen-lockfile
+# Install dependencies with more verbose output and retry on failure
+RUN yarn install --frozen-lockfile --network-timeout 300000 || \
+    (yarn cache clean && yarn install --frozen-lockfile --network-timeout 300000)
 
 # Copy source code
 COPY . .
