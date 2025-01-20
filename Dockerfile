@@ -2,20 +2,28 @@ FROM node:18-alpine as builder
 
 WORKDIR /app
 
-# Add python and build dependencies
-RUN apk add --no-cache python3 make g++ git
+# Add python and build dependencies with better error handling
+RUN apk update && \
+    apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    git \
+    libc6-compat
 
 # Copy package files
 COPY package.json yarn.lock ./
 
-# Install dependencies with more verbose output and retry on failure
-RUN yarn install --frozen-lockfile --network-timeout 300000 || \
-    (yarn cache clean && yarn install --frozen-lockfile --network-timeout 300000)
+# Clear yarn cache and install with retries
+RUN yarn cache clean && \
+    yarn install --network-timeout 600000 || \
+    (yarn cache clean && yarn install --network-timeout 600000) || \
+    (yarn cache clean && PYTHON=/usr/bin/python3 yarn install --network-timeout 600000)
 
 # Copy source code
 COPY . .
 
-# Build the app
+# Build the app with more verbose output
 RUN yarn build
 
 # Production stage
